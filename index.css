@@ -1,0 +1,382 @@
+
+
+body {
+    font-family: 'Roboto Condensed', sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Ensure that Tailwind's dark mode styles apply smoothly */
+.dark body {
+    background-color: #020617; /* Corresponds to slate-950 */
+    color: #f8fafc; /* Corresponds to slate-50 */
+}
+
+/* Styling for Remarkable output (prose) */
+.prose {
+    color: inherit;
+}
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+    color: inherit;
+    font-weight: 700; /* bold */
+    font-family: 'Orbitron', sans-serif;
+}
+.prose a {
+    color: #8b5cf6; /* purple-500 */
+    text-decoration: none;
+}
+.prose a:hover {
+    text-decoration: underline;
+}
+.prose strong {
+    color: inherit;
+    font-weight: 700; /* bold */
+}
+.prose blockquote {
+    border-left-color: #a78bfa; /* purple-400 */
+    color: inherit;
+    font-style: italic;
+}
+.prose code {
+    background-color: rgba(167, 139, 250, 0.1); /* light purple bg */
+    color: #8b5cf6; /* purple-500 */
+    padding: 0.1em 0.3em;
+    border-radius: 0.25rem;
+    font-family: 'Courier New', Courier, monospace;
+}
+.dark .prose code {
+    background-color: rgba(139, 92, 246, 0.2); /* darker purple bg for dark mode */
+    color: #a78bfa; /* purple-400 */
+}
+
+.prose ul > li::before {
+    background-color: currentColor;
+}
+.prose ol > li::before {
+    color: currentColor;
+}
+
+/* Custom scrollbar for better aesthetics in dark mode */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+.dark ::-webkit-scrollbar-thumb {
+    background-color: #4b5563; /* gray-600 */
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+    background-color: #6b7280; /* gray-500 */
+}
+html:not(.dark) ::-webkit-scrollbar-thumb {
+    background-color: #9ca3af; /* gray-400 */
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+html:not(.dark) ::-webkit-scrollbar-thumb:hover {
+    background-color: #71717a; /* zinc-500 */
+}
+
+
+/* Placeholder styling for dark mode */
+.dark ::placeholder {
+  color: #6b7280; /* gray-500 */
+}
+html:not(.dark) ::placeholder {
+  color: #a1a1aa; /* zinc-400 */
+}
+
+
+/* Focus rings for accessibility */
+*:focus-visible {
+    outline: 2px solid #8b5cf6 !important; /* purple-500 */
+    outline-offset: 2px !important;
+}
+.dark *:focus-visible {
+    outline-color: #a78bfa !important; /* purple-400 */
+}
+
+/* Ensure buttons have pointer cursor */
+button, label[htmlFor] {
+    cursor: pointer;
+}
+
+/* Sheet specific styles */
+.sheet-label {
+    background-color: black;
+    color: white;
+    padding: 4px 8px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.8rem; /* Slightly smaller for better fit */
+    clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 100%, 0% 100%); /* Diagonal cut, adjusted */
+    display: inline-block;
+    margin-bottom: 0px; /* Remove negative margin */
+    position: relative;
+    z-index: 1;
+}
+
+.field-container {
+    margin-bottom: 0.5rem; /* Reduced space between fields */
+}
+
+.sheet-input, .sheet-select, .sheet-textarea {
+    background-color: white;
+    color: black;
+    border: 2px solid black !important;
+    border-radius: 0 !important; /* No border-radius for sharp edges */
+    box-shadow: none !important;
+    padding: 6px 8px; /* Adjusted padding */
+    width: 100%;
+    font-family: 'Roboto Condensed', sans-serif;
+    margin-top: 0 !important; /* Ensure inputs align with label bottom */
+}
+
+.sheet-input:focus, .sheet-select:focus, .sheet-textarea:focus {
+  border-color: #8b5cf6 !important; /* purple-500 */
+  box-shadow: 0 0 0 1px #8b5cf6 !important; /* purple-500, thinner focus ring */
+}
+
+
+.dark .sheet-label {
+    background-color: #f3f4f6; /* gray-100 for dark mode labels */
+    color: black;
+}
+.dark .sheet-input, .dark .sheet-select, .dark .sheet-textarea {
+    background-color: #374151; /* gray-700 for dark mode inputs */
+    color: #e5e7eb; /* gray-200 */
+    border-color: #9ca3af !important; /* gray-400 */
+}
+.dark .sheet-input:focus, .dark .sheet-select:focus, .dark .sheet-textarea:focus {
+  border-color: #a78bfa !important; /* purple-400 */
+  box-shadow: 0 0 0 1px #a78bfa !important; /* purple-400, thinner focus ring */
+}
+
+
+.sheet-section-title {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900; /* black */
+    font-size: 1.875rem; /* text-3xl, was 2.5rem (text-4xl) */
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: black;
+    border-bottom: 3px solid black; /* was 4px */
+    padding-bottom: 0.3rem; /* was 0.5rem */
+    margin-bottom: 1rem; /* was 1.5rem */
+}
+.dark .sheet-section-title {
+    color: #f3f4f6; /* gray-100 */
+    border-bottom-color: #f3f4f6;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 500px;
+}
+
+.dark .modal-content {
+  background-color: #1f2937; /* gray-800 */
+  color: #e5e7eb; /* gray-200 */
+}
+
+.floating-notes-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 100;
+}
+
+.floating-notes-panel {
+  position: fixed;
+  bottom: 80px; /* Above the toggle button */
+  right: 20px;
+  width: 400px;
+  max-height: 500px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* For border-radius clipping */
+  z-index: 100;
+}
+
+.dark .floating-notes-panel {
+  background-color: #1f2937; /* Tailwind gray-800 */
+  border-color: #4b5563; /* Tailwind gray-600 */
+  color: #e5e7eb;
+}
+
+.notes-formatting-bar {
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  border-bottom: 1px solid #ccc;
+}
+.dark .notes-formatting-bar {
+  border-bottom-color: #4b5563;
+}
+.notes-formatting-bar button {
+  background-color: #f3f4f6;
+  border: 1px solid #d1d5db;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+.dark .notes-formatting-bar button {
+  background-color: #374151;
+  border-color: #4b5563;
+  color: #e5e7eb;
+}
+.notes-formatting-bar button:hover {
+  background-color: #e5e7eb;
+}
+.dark .notes-formatting-bar button:hover {
+  background-color: #4b5563;
+}
+
+.notes-textarea {
+  flex-grow: 1;
+  padding: 8px;
+  border: none;
+  outline: none;
+  resize: none;
+  font-family: 'Roboto Condensed', sans-serif;
+}
+.dark .notes-textarea {
+  background-color: #1f2937;
+  color: #e5e7eb;
+}
+
+.profile-item-selected {
+  background-color: #d1fae5; /* Tailwind green-100 */
+  border: 1px solid #34d399; /* Tailwind green-400 */
+}
+.dark .profile-item-selected {
+  background-color: #047857; /* Tailwind green-700 */
+  border-color: #059669; /* Tailwind green-600 */
+}
+
+.resource-box {
+    background-color: white;
+    color: black;
+    border: 2px solid black;
+    padding: 8px;
+    text-align: center;
+    height: 100%; /* Make boxes fill grid cell height */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.dark .resource-box {
+    background-color: #374151; /* gray-700 */
+    color: #e5e7eb; /* gray-200 */
+    border-color: #9ca3af; /* gray-400 */
+}
+.resource-box-label {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.7rem; /* xs */
+    margin-bottom: 2px;
+}
+.resource-box-value {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900; /* black */
+    font-size: 1.875rem; /* 3xl */
+    line-height: 1;
+}
+.dark .resource-box-value {
+    color: #a78bfa; /* purple-400 */
+}
+html:not(.dark) .resource-box-value {
+    color: #8b5cf6; /* purple-500 */
+}
+
+.image-manager-container {
+    border: 2px solid black;
+    background-color: white;
+    padding: 1rem;
+    min-height: 280px; /* Ensure it has some height */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.dark .image-manager-container {
+    border-color: #9ca3af;
+    background-color: #374151;
+}
+.image-preview {
+    width: 100%;
+    height: 150px; /* Fixed height for preview */
+    border: 2px dashed #000000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+    background-color: #f0f0f0;
+}
+.dark .image-preview {
+    border-color: #9ca3af;
+    background-color: #4b5563;
+}
+.image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* General button styles for actions */
+.sheet-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem; 
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.sheet-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.action-buttons-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem; /* Space between buttons */
+    margin-bottom: 1.5rem; /* Space below button group */
+    justify-content: center; /* Center buttons if they wrap */
+}
+
+@media (min-width: 640px) { /* sm breakpoint */
+    .action-buttons-container {
+        justify-content: flex-start; /* Align to left on larger screens */
+    }
+}

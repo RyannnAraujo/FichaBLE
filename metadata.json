@@ -1,0 +1,6 @@
+{
+  "name": "Gerador de Ficha - Brigada Ligeira Estelar (React Client-Side)",
+  "description": "Uma aplicação React para criar e gerenciar fichas de personagem para o RPG Brigada Ligeira Estelar. Funciona totalmente no lado do cliente.",
+  "requestFramePermissions": [],
+  "prompt": ""
+}
