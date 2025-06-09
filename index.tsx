@@ -14,8 +14,36 @@ declare global {
     Remarkable: any;
     jspdf: { jsPDF: any; };
     html2canvas: any;
+    GEMINI_API_KEY?: string; // For client-side API key injection
   }
 }
+
+// --- API Key Configuration ---
+const getEffectiveApiKey = (): string | undefined => {
+    if (typeof window !== 'undefined' && window.GEMINI_API_KEY && window.GEMINI_API_KEY !== "YOUR_GEMINI_API_KEY_REPLACE_ME") {
+        return window.GEMINI_API_KEY;
+    }
+    // Fallback for Node.js environments, though less relevant for this client-side app
+    if (typeof process !== 'undefined' && process.env && process.env.API_KEY && process.env.API_KEY !== "YOUR_GEMINI_API_KEY_REPLACE_ME") {
+        return process.env.API_KEY;
+    }
+    return undefined;
+};
+
+const EFFECTIVE_GEMINI_API_KEY = getEffectiveApiKey();
+let genAIInstance: GoogleGenAI | null = null;
+
+if (EFFECTIVE_GEMINI_API_KEY) {
+    try {
+        genAIInstance = new GoogleGenAI({ apiKey: EFFECTIVE_GEMINI_API_KEY });
+    } catch (e) {
+        console.error("Failed to initialize GoogleGenAI:", e);
+        genAIInstance = null; // Ensure it's null if initialization fails
+    }
+} else {
+    console.warn("Gemini API Key not configured. AI image generation will be disabled.");
+}
+
 
 interface ItemOption {
   name: string;
@@ -305,10 +333,15 @@ const ImageManager = ({ imageSrc, onImageChange, entityName, isDarkMode }: { ima
             alert(`Por favor, insira uma descrição para gerar a imagem do ${entityName}.`);
             return;
         }
+        if (!genAIInstance) {
+            alert("API Key não configurada. Geração de imagem por IA está desabilitada.");
+            setIsLoading(false);
+            return;
+        }
         setIsLoading(true);
         try {
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
-            const response = await ai.models.generateImages({
+            // genAIInstance is already initialized globally if EFFECTIVE_GEMINI_API_KEY was found
+            const response = await genAIInstance.models.generateImages({
                 model: 'imagen-3.0-generate-002',
                 prompt: prompt,
                 config: { numberOfImages: 1, outputMimeType: 'image/jpeg' },
@@ -322,7 +355,7 @@ const ImageManager = ({ imageSrc, onImageChange, entityName, isDarkMode }: { ima
             }
         } catch (error) {
             console.error("Erro ao gerar imagem:", error);
-            alert(`Falha ao gerar a imagem para ${entityName}. Verifique o console para detalhes e se a API Key está configurada.`);
+            alert(`Falha ao gerar a imagem para ${entityName}. Verifique o console para detalhes e se a API Key está configurada corretamente.`);
         } finally {
             setIsLoading(false);
         }
@@ -345,7 +378,7 @@ const ImageManager = ({ imageSrc, onImageChange, entityName, isDarkMode }: { ima
             <div className="space-y-2">
                 <input type="text" value={prompt} onChange={(e) => setPrompt(e.target.value)} placeholder={`Descreva o ${entityName}...`} className={`sheet-input ${isDarkMode ? 'dark' : ''} text-sm`} />
                 <div className="grid grid-cols-2 gap-2">
-                    <button onClick={handleGenerateClick} disabled={isLoading || !process.env.API_KEY} className={`sheet-button-primary text-sm w-full flex items-center justify-center ${!process.env.API_KEY ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                    <button onClick={handleGenerateClick} disabled={isLoading || !genAIInstance} className={`sheet-button-primary text-sm w-full flex items-center justify-center ${!genAIInstance ? 'opacity-50 cursor-not-allowed' : ''}`}>
                         <Wand2 size={16} className="mr-1"/> Gerar IA
                     </button>
                     <button onClick={handleUploadClick} className="sheet-button-secondary text-sm w-full flex items-center justify-center">
@@ -357,7 +390,7 @@ const ImageManager = ({ imageSrc, onImageChange, entityName, isDarkMode }: { ima
                         <Trash2 size={16} className="mr-1"/> Remover Imagem
                     </button>
                 )}
-                {!process.env.API_KEY && <p className="text-xs text-red-500 dark:text-red-400 text-center mt-1"><AlertTriangle size={14} className="inline mr-1"/>API Key não configurada.</p>}
+                {!genAIInstance && <p className="text-xs text-red-500 dark:text-red-400 text-center mt-1"><AlertTriangle size={14} className="inline mr-1"/>API Key não configurada.</p>}
             </div>
             <input type="file" ref={hiddenFileInput} onChange={handleFileChange} style={{ display: 'none' }} accept="image/*" />
         </div>
@@ -587,6 +620,12 @@ function App() {
     const [sheet, setSheet] = useState<Sheet>(initialSheet);
     const [isDarkMode, setIsDarkMode] = useState(() => {
         if (typeof window !== 'undefined') {
+            // Check localStorage first
+            const storedDarkMode = localStorage.getItem('darkMode');
+            if (storedDarkMode !== null) {
+                return JSON.parse(storedDarkMode);
+            }
+            // Fallback to system preference
             return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
         }
         return false;
@@ -595,7 +634,12 @@ function App() {
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const matcher = window.matchMedia('(prefers-color-scheme: dark)');
-            const listener = (e: MediaQueryListEvent) => setIsDarkMode(e.matches);
+            const listener = (e: MediaQueryListEvent) => {
+                // Only update if localStorage isn't set, to respect user's explicit choice
+                if (localStorage.getItem('darkMode') === null) {
+                    setIsDarkMode(e.matches);
+                }
+            };
             matcher.addEventListener('change', listener);
             return () => matcher.removeEventListener('change', listener);
         }
@@ -606,6 +650,10 @@ function App() {
             document.documentElement.classList.add('dark');
         } else {
             document.documentElement.classList.remove('dark');
+        }
+        // Save user preference to localStorage
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
         }
     }, [isDarkMode]);
 
@@ -1045,5 +1093,5 @@ if (rootElement) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(React.createElement(App));
 } else {
-  console.error('Root element not found. App could not be mounted.');
+  console.warn('React root element (#root) not found. React app (index.tsx) not mounted. This is expected if running the vanilla JS version.');
 }

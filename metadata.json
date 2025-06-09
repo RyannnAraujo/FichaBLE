@@ -1,6 +1,8 @@
+
 {
-  "name": "Gerador de Ficha - Brigada Ligeira Estelar",
-  "description": "Uma aplicação para criar e gerenciar fichas de personagem para o RPG Brigada Ligeira Estelar, com suporte a geração de imagens por IA.",
+  "name": "Gerador de Ficha - Brigada Ligeira Estelar (Vanilla JS)",
+  "description": "Uma aplicação HTML, CSS e JavaScript para criar e gerenciar fichas de personagem para o RPG Brigada Ligeira Estelar, com suporte a geração de imagens por IA (requer configuração de API Key).",
   "requestFramePermissions": [],
   "prompt": ""
 }
+      
